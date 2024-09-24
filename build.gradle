@@ -41,6 +41,10 @@ dependencies {
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.0.Beta1'
     // https://mvnrepository.com/artifact/org.mapstruct/mapstruct
     implementation 'org.mapstruct:mapstruct:1.6.0.Beta1'
+
+
+    // git
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:6.9.0.202403050737-r'
 }
 
 tasks.named('test') {

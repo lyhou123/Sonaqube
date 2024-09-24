@@ -22,5 +22,9 @@ springdoc:
 sonar:
   token: squ_fb8b910e970a8269272808486bfb0f111636083e
   url: http://localhost:9000
-  username: admin
-  password: lyhou123
+
+my-app:
+  state: dev
+
+git:
+  clone_directory: /git_clone_repos/

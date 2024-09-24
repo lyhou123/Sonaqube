@@ -27,7 +27,6 @@ public interface ProjectService {
 
    /**
     * Get project by project name
-    * @param projectName
     * @return ProjectResponse
     * @Author: Lyhou
     */
