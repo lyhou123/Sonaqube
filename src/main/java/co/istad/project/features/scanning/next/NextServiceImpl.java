@@ -36,32 +36,22 @@ public class NextServiceImpl implements NextService{
         // Clone the Next.js project to the specified directory
         String fileName = gitConfig.gitClone(gitUrl, branch, cloneDirect);
 
-        // Create the SonarQube scanner Docker command
+        String binariesPath = "out/.next"; // Assuming you're using the default build output directory for Next.js
+
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
-        command.add("--rm");  // Automatically remove the container when it exits
-
-        // Mount the Next.js project directory into the container
+        command.add("--rm");
         command.add("-v");
-        command.add(cloneDirect + ":/usr/src/project");
+        command.add("/usr/src");
         command.add("sonarsource/sonar-scanner-cli");
-
-        // SonarScanner options for Next.js (Node.js/JavaScript) project
         command.add("-Dsonar.projectKey=" + projectName);
         command.add("-Dsonar.projectName=" + projectName);
-        command.add("-Dsonar.sources=/usr/src/project");
-        command.add("-Dsonar.branch.name=" + branch);
         command.add("-Dsonar.host.url=" + sonarHostUrl);
         command.add("-Dsonar.token=" + sonarLoginToken);
-
-        // Additional options specific to Node.js projects
-        command.add("-Dsonar.language=js");
-        command.add("-Dsonar.sourceEncoding=UTF-8");
-        command.add("-Dsonar.exclusions=**/node_modules/**,**/build/**"); // Exclude unnecessary directories
-
-        // Enable debug output
-        command.add("-X");
+        command.add("-Dsonar.sources=."); // The source code directory for Next.js
+        command.add("-Dsonar.java.binaries=" + binariesPath); // The output directory for binaries in Next.js
+        command.add("-X"); // Debug mode
 
         // Log the command being executed
         System.out.println("Executing command: " + String.join(" ", command));
