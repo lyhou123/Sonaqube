@@ -1,6 +1,5 @@
 package co.istad.project.utils;
 
-import co.istad.project.config.AppConfig;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;
