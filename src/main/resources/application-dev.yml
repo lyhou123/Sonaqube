@@ -20,8 +20,8 @@ springdoc:
     path: '/'
 
 sonar:
-  token: squ_fb8b910e970a8269272808486bfb0f111636083e
-  url: http://localhost:9000
+  token: squ_55caae1ee23e4d6c9ecdaece2796acf29d40c8e7    #squ_fb8b910e970a8269272808486bfb0f111636083e(server)
+  url: http://167.172.64.59:3004
 
 my-app:
   state: dev
