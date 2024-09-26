@@ -51,8 +51,6 @@ public class SpringBootServiceImpl implements SpringBootService{
 
         String buildTool = detectSpringBuildTool.detect(clone_direct + fileName);
 
-        System.out.println("this is build tool"+buildTool);
-
         if(buildTool.equalsIgnoreCase("Maven")) {
 
             sonarCustomizeScan.scanForMaven(clone_direct, fileName, projectName);

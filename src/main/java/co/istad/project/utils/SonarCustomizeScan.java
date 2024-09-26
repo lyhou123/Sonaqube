@@ -20,7 +20,7 @@ public class SonarCustomizeScan {
     private String sonarUrl;
     @Value("${my-app.state}")
     private String myApp;
-    private final AppConfig appConfig;
+
 
     private void buildSpringProject(String projectPath, String projectName, String buildTool) throws Exception{
         if ("Maven".equals(buildTool)) {
@@ -107,7 +107,7 @@ public class SonarCustomizeScan {
 
     public void scanForGradle(String projectPath,String projectName, String sonarProjectKey) throws Exception{
         buildSpringProject(projectPath,projectName,"Gradle");
-        System.out.println("Project to scan: " + projectPath + projectName);
+
         List<String> command;
         if(myApp.equalsIgnoreCase("dev")){
             command = sonarCLIForMavenOfGradleInLocal("Gradle",
@@ -127,10 +127,7 @@ public class SonarCustomizeScan {
     private List<String> sonarCLIForMavenOfGradleInLocal(String buildToolName,
                                                               String projectPath,
                                                               String sonarProjectKey){
-        System.out.println(projectPath);
 
-        // Determine the binaries directory based on the build tool
-// Determine the binaries directory based on the build tool
         String binariesPath = buildToolName.equalsIgnoreCase("Maven")
                 ? "target/classes,target"
                 : "build/classes/java/main";
