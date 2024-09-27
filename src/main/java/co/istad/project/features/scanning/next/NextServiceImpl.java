@@ -28,40 +28,37 @@ public class NextServiceImpl implements NextService{
 
     private final GitConfig gitConfig;
     @Override
-    public String nextScanning(String gitUrl, String branch, String projectName) throws Exception {
+    public String nextScanning(String gitUrl, String branch, String projectName)  {
 
         String currentProjectDir = appConfig.getProjectAbsolutePath();
         String cloneDirect = currentProjectDir + clone_dir;
 
-        // Clone the Next.js project to the specified directory
         String fileName = gitConfig.gitClone(gitUrl, branch, cloneDirect);
-
-        String binariesPath = "out/.next"; // Assuming you're using the default build output directory for Next.js
 
         List<String> command = new ArrayList<>();
         command.add("docker");
         command.add("run");
         command.add("--rm");
         command.add("-v");
-        command.add("/usr/src");
+        command.add(cloneDirect + ":/usr/src");  // Mount your cloned directory
+        command.add("-w");
+        command.add("/usr/src");  // Set working directory in Docker
         command.add("sonarsource/sonar-scanner-cli");
         command.add("-Dsonar.projectKey=" + projectName);
         command.add("-Dsonar.projectName=" + projectName);
         command.add("-Dsonar.host.url=" + sonarHostUrl);
         command.add("-Dsonar.token=" + sonarLoginToken);
-        command.add("-Dsonar.sources=."); // The source code directory for Next.js
-        command.add("-Dsonar.java.binaries=" + binariesPath); // The output directory for binaries in Next.js
-        command.add("-X"); // Debug mode
-
-        // Log the command being executed
-        System.out.println("Executing command: " + String.join(" ", command));
+        command.add("-Dsonar.sources=.");
+        command.add("-X");
 
         // Execute the SonarQube scan
         try {
             scanProject(command);
+
         } catch (Exception e) {
+
             System.err.println("Error during SonarQube scan: " + e.getMessage());
-            e.printStackTrace(); // Log the stack trace for further analysis
+
             throw new RuntimeException("SonarQube scan failed", e); // Rethrow as a runtime exception
         }
 
