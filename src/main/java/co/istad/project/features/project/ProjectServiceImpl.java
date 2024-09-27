@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -46,7 +48,7 @@ public class ProjectServiceImpl implements ProjectService {
         Boolean isProjectAlreadyExisted = projectRepository.existsByProjectName(projectRequest.projectName());
 
         if(isProjectAlreadyExisted){
-            throw new RuntimeException("Project is already existed");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ProjectName already existed");
         }
 
 
@@ -69,6 +71,12 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectResponse> getAllProject() {
 
+        if(projectRepository.findAll().isEmpty()){
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Project is empty");
+
+        }
+
         return projectRepository.findAll().stream()
                 .map(projectMapper::mapToProjectResponse)
                 .toList();
@@ -79,7 +87,9 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponse getProjectByProjectName(String projectName) {
 
         var findProject = projectRepository.findByProjectName(projectName)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "ProjectName not found"));
 
         return projectMapper.mapToProjectResponse(findProject);
     }
@@ -96,7 +106,13 @@ public class ProjectServiceImpl implements ProjectService {
 
         var response = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-        System.out.println("http status code="+response.getStatusCode());
+//        check if project name doesn't exist
+        if(response.getStatusCode() == HttpStatus.NOT_FOUND){
+
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ProjectName not found");
+
+        }
+
 
         if(response.getStatusCode() == HttpStatus.NO_CONTENT){
 

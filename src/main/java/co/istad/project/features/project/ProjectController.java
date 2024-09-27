@@ -56,7 +56,6 @@ public class ProjectController {
             description = "This endpoint is used for getting project by project name"
     )
     @GetMapping("/{projectName}")
-    @ResponseStatus(HttpStatus.OK)
     public BaseRestResponse<Object> getProjectByName(@PathVariable String projectName) {
         return BaseRestResponse
                 .builder()
