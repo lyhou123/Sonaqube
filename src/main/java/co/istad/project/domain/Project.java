@@ -27,4 +27,8 @@ public class Project {
     private Boolean isUsed;
     private Boolean isDeleted;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
 }
