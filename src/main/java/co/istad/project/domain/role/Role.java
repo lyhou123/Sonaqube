@@ -26,4 +26,5 @@ public class Role {
 
     private EnumRole roleName;
 
+
 }

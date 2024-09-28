@@ -2,10 +2,13 @@ package co.istad.project.features.auth;
 
 
 import co.istad.project.features.auth.dto.AuthRequest;
-import co.istad.project.features.auth.dto.AuthRespone;
+import co.istad.project.features.auth.dto.AuthResponse;
+import co.istad.project.features.auth.dto.RefreshTokenRequest;
+import co.istad.project.features.user.dto.ResponseUserDto;
+import co.istad.project.features.user.dto.UserRegisterDto;
 
 public interface AuthService {
-    AuthRespone login(AuthRequest authRequest);
-    AuthRespone signup(AuthRequest authRequest);
-    AuthRespone refreshToken(String refreshToken);
+    AuthResponse login(AuthRequest authRequest);
+    ResponseUserDto createUser(UserRegisterDto userRegisterDto);
+    AuthResponse refreshToken(RefreshTokenRequest refreshToken);
 }

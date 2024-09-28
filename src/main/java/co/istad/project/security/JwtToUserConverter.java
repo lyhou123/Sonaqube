@@ -1,54 +1,41 @@
 package co.istad.project.security;
 
+import co.istad.project.domain.User;
 import co.istad.project.repo.UserRepository;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
-@Setter
 @Getter
-@Data
+@Setter
 @RequiredArgsConstructor
 @Component
-public class JwtToUserConverter implements Converter<Jwt, JwtAuthenticationToken> {
+public class JwtToUserConverter implements Converter<Jwt, UsernamePasswordAuthenticationToken> {
 
     private final UserRepository userRepository;
 
+
     @Override
-    public JwtAuthenticationToken convert(Jwt source) {
-        var User = userRepository.findUsersByEmail(source.getSubject()).orElseThrow(()->
+    public UsernamePasswordAuthenticationToken convert(Jwt source) {
 
-                new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
+        User user = userRepository.findUsersByEmail(source.getSubject()).orElseThrow(()-> new BadCredentialsException("Invalid Token"));
 
-        UserDetail userDetail = new UserDetail();
+        CustomUserDetails userDetail = new CustomUserDetails();
 
-        userDetail.setUser(User);
+        userDetail.setUser(user);
 
-        return new JwtAuthenticationToken(source, userDetail.getAuthorities());
+        System.out.println("User Authorities are" + userDetail.getAuthorities());
+        userDetail.getAuthorities().forEach(
+                authority -> {
+                    System.out.println("Here is the authority get from the jwt"+authority.getAuthority());
+                }
+        );
+
+        return new UsernamePasswordAuthenticationToken(userDetail,"",userDetail.getAuthorities());
     }
-
-//    @Override
-//    public UsernamePasswordAuthenticationToken convert(Jwt source) {
-//        User user = userRepository.findByEmail(source.getSubject()).orElseThrow(()->
-//                new IllegalArgumentException("User not found"));
-//
-//        UserDetail userDetail = new UserDetail();
-//        userDetail.setUser(user);
-//
-//         userDetail.getAuthorities().forEach(
-//                 authority -> System.out.println(authority.getAuthority())
-//         );
-//
-//        return new UsernamePasswordAuthenticationToken(
-//                userDetail,
-//                "",
-//                userDetail.getAuthorities());
-//    }
 }

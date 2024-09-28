@@ -18,6 +18,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 import java.util.Objects;
+
 @Component
 public class KeyUtils {
     @Autowired
@@ -54,7 +55,7 @@ public class KeyUtils {
         if (publicKeyFile.exists() && privateKeyFile.exists()){
             try{
                 KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-                // read key from file and create a publickey with encryprtion
+                // read key from file and create a public key with encryption
                 byte[] publicKeyBytes  = Files.readAllBytes(publicKeyFile.toPath());
                 //X509 -> used for public key
                 EncodedKeySpec publicKeySpec =  new X509EncodedKeySpec(publicKeyBytes);
@@ -77,12 +78,12 @@ public class KeyUtils {
         }else {
 
             if(Arrays.asList(environment.getActiveProfiles()).contains("prod")){
-                throw new RuntimeException("public and private key doesn't exist !");
+//                throw new RuntimeException("public and private key doesn't exist !");
             }
         }
 
 
-        File directory = new File("access-refresh-token-keys");
+        File directory = new File("keys");
         if(!directory.exists()){
             directory.mkdirs();
         }
@@ -126,4 +127,3 @@ public class KeyUtils {
 
 
 }
-

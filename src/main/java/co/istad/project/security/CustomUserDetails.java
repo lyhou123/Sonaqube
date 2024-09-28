@@ -2,33 +2,32 @@ package co.istad.project.security;
 
 import co.istad.project.domain.User;
 import co.istad.project.domain.role.Role;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
-@Setter
+
 @Getter
+@Setter
 @NoArgsConstructor
-public class UserDetail implements UserDetails {
 
+public class CustomUserDetails implements UserDetails {
     private User user;
+    private String userUuid;
 
-    Set<Role> roles = new HashSet<>();
 
-    //make authority in to this method
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
+        return user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
                 .collect(Collectors.toList());
     }
-
 
     @Override
     public String getPassword() {
@@ -42,21 +41,21 @@ public class UserDetail implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return !user.isAccountNonExpired();
+        return user.getIsAccountNonExpired();
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return !user.isAccountNonLocked();
+        return user.getIsAccountNonLocked();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return !user.isCredentialsNonExpired();
+        return user.getIsCredentialsNonExpired();
     }
 
     @Override
     public boolean isEnabled() {
-        return !user.isEnabled();
+        return !user.getIsEnabled();
     }
 }

@@ -2,9 +2,11 @@ package co.istad.project.features.auth;
 
 
 import co.istad.project.features.auth.dto.AuthRequest;
-import co.istad.project.features.auth.dto.RefresTokenRequest;
+import co.istad.project.features.auth.dto.AuthResponse;
+import co.istad.project.features.auth.dto.RefreshTokenRequest;
 import co.istad.project.features.user.UserService;
 import co.istad.project.features.user.dto.UserRegisterDto;
+import co.istad.project.respone.BaseResponse;
 import co.istad.project.respone.BaseRestResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
@@ -44,15 +46,21 @@ public class AuthRestController {
                 .build();
     }
 
-    @PostMapping("/refresh")
-    public BaseRestResponse<Object> refreshToken(@RequestBody RefresTokenRequest refresTokenRequest)
-    {
-      return BaseRestResponse
-              .builder()
-              .status(HttpStatus.OK.value())
-              .data(authService.refreshToken(refresTokenRequest))
-              .message("Token refreshed successfully")
-              .build();
+//    @PostMapping("/refresh")
+//    public BaseRestResponse<Object> refreshToken(@RequestBody RefreshTokenRequest refresTokenRequest)
+//    {
+//      return BaseRestResponse
+//              .builder()
+//              .status(HttpStatus.OK.value())
+//              .data(authService.refreshToken(refresTokenRequest))
+//              .message("Token refreshed successfully")
+//              .build();
+//    }
+
+    @PostMapping("/refreshToken1")
+    public BaseResponse<AuthResponse> refreshToken( @RequestBody RefreshTokenRequest request) {
+        return BaseResponse.<AuthResponse>ok()
+                .setPayload(authService.refreshToken(request));
     }
 
 }

@@ -1,12 +1,11 @@
 package co.istad.project.features.auth;
 
-
 import co.istad.project.domain.User;
 import co.istad.project.domain.role.EnumRole;
 import co.istad.project.domain.role.Role;
 import co.istad.project.features.auth.dto.AuthRequest;
-import co.istad.project.features.auth.dto.AuthRespone;
-import co.istad.project.features.auth.dto.RefresTokenRequest;
+import co.istad.project.features.auth.dto.AuthResponse;
+import co.istad.project.features.auth.dto.RefreshTokenRequest;
 import co.istad.project.features.role.RoleRepository;
 import co.istad.project.features.user.UserMapper;
 import co.istad.project.features.user.dto.ResponseUserDto;
@@ -19,13 +18,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +29,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class AuthServiceImpl {
+public class AuthServiceImpl implements AuthService {
 
     private final TokenGenerator tokenGenerator;
 
@@ -48,14 +44,17 @@ public class AuthServiceImpl {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
-    public AuthRespone login(AuthRequest authRequest) {
+    public AuthResponse login(AuthRequest authRequest) {
         Authentication authentication = daoAuthenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password())
         );
         return tokenGenerator.generateTokens(authentication);
     }
 
-    public AuthRespone refreshToken(RefresTokenRequest refresTokenRequest)
+
+
+    @Override
+    public AuthResponse refreshToken(RefreshTokenRequest refresTokenRequest)
     {
        Authentication authentication = jwtAuthenticationProvider.authenticate(
                new BearerTokenAuthenticationToken(refresTokenRequest.refreshToken())
@@ -63,17 +62,27 @@ public class AuthServiceImpl {
        return tokenGenerator.generateTokens(authentication);
     }
 
-
+    @Override
     public ResponseUserDto createUser(UserRegisterDto userRegisterDto){
+
         if(userRepository.existsByEmail(userRegisterDto.email())){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User with email " + userRegisterDto.email() + " already existed");
         }
+
         User user = new User();
         user.setUuid(UUID.randomUUID().toString());
         user.setName(userRegisterDto.userName());
         user.setEmail(userRegisterDto.email());
         user.setIsDeleted(true);
         user.setIsVerified(false);
+        user.setIsDeleted(false);
+
+        user.setIsAccountNonExpired(true);
+        user.setIsAccountNonLocked(true);
+        user.setIsCredentialsNonExpired(true);
+        user.setIsEnabled(false);
+
+
         user.setRegisteredDate(LocalDateTime.now());
 //        set role for user
         Set<Role> roles = new HashSet<>();

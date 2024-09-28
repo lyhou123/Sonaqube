@@ -1,9 +1,8 @@
 package co.istad.project.config;
 
-
-import co.istad.project.security.CustomDetailService;
 import co.istad.project.security.JwtToUserConverter;
 import co.istad.project.security.KeyUtils;
+import co.istad.project.security.UserDetailServiceImpl;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
@@ -15,10 +14,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,59 +30,12 @@ import org.springframework.security.oauth2.server.resource.web.access.BearerToke
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
 
-    private final CustomDetailService customDetailService;
-
-    private final JwtToUserConverter jwtToUserConverter;
-
+    private final UserDetailServiceImpl userDetailService;
     private final KeyUtils keyUtils;
-
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
-                .authorizeHttpRequests(
-                        (authorizeRequests) -> authorizeRequests
-                                //allow auth resources swagger ui
-                                .requestMatchers("/",
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui/**",
-                                        "/v2/api-docs/**",
-                                        "/swagger-resources/**")
-                                .permitAll()
-                                .requestMatchers("/api/v1/auth/**").permitAll()
-                                .requestMatchers("/api/v1/roles/**").permitAll()
-                                .requestMatchers(
-                                        HttpMethod.PATCH,
-                                        "/api/v1/users/**").hasRole("ADMIN")
-                                .requestMatchers(
-                                        HttpMethod.DELETE,
-                                        "/api/v1/users/**").hasRole("ADMIN")
-                                .requestMatchers("images/**").permitAll()
-                                .anyRequest().authenticated()
-                )
-                .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-
-                .oauth2ResourceServer(oauth2ResourceServer ->
-                        oauth2ResourceServer.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtToUserConverter))
-                )
-
-                .sessionManagement(sessionManagement ->
-                        sessionManagement
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                .exceptionHandling((ex) -> ex
-                        .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
-                .build();
-
-    }
+    private final JwtToUserConverter jwtToUserConverter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -95,9 +45,39 @@ public class SecurityConfiguration {
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(customDetailService);
+        provider.setUserDetailsService(userDetailService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        return http.authorizeHttpRequests(
+                        (auth) -> auth.requestMatchers("/api",
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/v2/api-docs/**",
+                                        "/swagger-resources/**").permitAll()
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+
+                                .anyRequest().authenticated()
+                ).csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .oauth2ResourceServer(
+                        (oauth2) -> oauth2.jwt(jwtConfigurer ->
+                                jwtConfigurer.jwtAuthenticationConverter(jwtToUserConverter)))
+                .sessionManagement(
+                        (session) -> session
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(
+                        (ex) -> ex.authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                                .accessDeniedHandler(new BearerTokenAccessDeniedHandler()))
+
+
+                .build();
     }
 
     @Bean
@@ -127,7 +107,6 @@ public class SecurityConfiguration {
         JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwkSource);
     }
-
     @Bean
     @Primary
     JwtDecoder jwtAccessTokenDecoder(){
@@ -144,10 +123,7 @@ public class SecurityConfiguration {
         );
         provider.setJwtAuthenticationConverter(jwtToUserConverter);
         return provider;
-
     }
-
-
 
 
 }
