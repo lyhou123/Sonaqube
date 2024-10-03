@@ -1,7 +1,7 @@
 package co.istad.project.security;
 
 import co.istad.project.domain.User;
-import co.istad.project.repo.UserRepository;
+import co.istad.project.features.user.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

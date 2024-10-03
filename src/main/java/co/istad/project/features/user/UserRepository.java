@@ -1,4 +1,4 @@
-package co.istad.project.repo;
+package co.istad.project.features.user;
 
 import co.istad.project.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

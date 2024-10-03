@@ -1,6 +1,6 @@
 package co.istad.project.security;
 
-import co.istad.project.repo.UserRepository;
+import co.istad.project.features.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

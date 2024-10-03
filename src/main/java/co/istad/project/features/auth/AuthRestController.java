@@ -58,9 +58,15 @@ public class AuthRestController {
 //    }
 
     @PostMapping("/refreshToken1")
-    public BaseResponse<AuthResponse> refreshToken( @RequestBody RefreshTokenRequest request) {
-        return BaseResponse.<AuthResponse>ok()
-                .setPayload(authService.refreshToken(request));
+    public BaseRestResponse<Object> refreshToken( @RequestBody RefreshTokenRequest request) {
+
+        return BaseRestResponse
+                .builder()
+                .status(HttpStatus.OK.value())
+                .data(authService.refreshToken(request))
+                .message("Token refreshed successfully")
+                .build();
+
     }
 
 }

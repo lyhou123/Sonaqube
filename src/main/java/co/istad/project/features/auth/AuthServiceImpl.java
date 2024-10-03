@@ -10,7 +10,7 @@ import co.istad.project.features.role.RoleRepository;
 import co.istad.project.features.user.UserMapper;
 import co.istad.project.features.user.dto.ResponseUserDto;
 import co.istad.project.features.user.dto.UserRegisterDto;
-import co.istad.project.repo.UserRepository;
+import co.istad.project.features.user.UserRepository;
 import co.istad.project.security.TokenGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -66,7 +66,7 @@ public class AuthServiceImpl implements AuthService {
     public ResponseUserDto createUser(UserRegisterDto userRegisterDto){
 
         if(userRepository.existsByEmail(userRegisterDto.email())){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User with email " + userRegisterDto.email() + " already existed");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"User with email " + userRegisterDto.email() + " already existed");
         }
 
         User user = new User();

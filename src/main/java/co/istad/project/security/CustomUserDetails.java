@@ -1,14 +1,11 @@
 package co.istad.project.security;
 
 import co.istad.project.domain.User;
-import co.istad.project.domain.role.Role;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -17,6 +14,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 
 public class CustomUserDetails implements UserDetails {
+
     private User user;
     private String userUuid;
 
