@@ -29,6 +29,11 @@ my-app:
 git:
   clone_directory: /git_clone_repos/
 
+file_storage:
+  image_location: "filestorage/images/"
+  client_path: "/images/**"
+
+
 # This is for the access token
 ACCESS_TOKEN_PRIVATE_KEY_PATH: access-refresh-token-keys/access-token-private.key
 ACCESS_TOKEN_PUBLIC_KEY_PATH: access-refresh-token-keys/access-token-public.key
