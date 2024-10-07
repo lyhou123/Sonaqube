@@ -1,30 +1,31 @@
 package co.istad.project.features.git;
 
-import co.istad.project.respone.BaseRestResponse;
+import co.istad.project.features.git.dto.GitRepositoryResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 
-import java.time.LocalDateTime;
 
-@RestController("/api/v1/git")
+@RestController
+@RequestMapping("/api/v1/git")
 @RequiredArgsConstructor
 public class GitController {
 
     private final GitService gitService;
 
-    @GetMapping("/{username}")
-    public BaseRestResponse<Object> getListRepositories(@PathVariable String username) {
-
-        return BaseRestResponse.builder()
-                .data(gitService.getListRepositories(username).getBody())
-                .status(200)
-                .message("Success")
-                .timestamp(LocalDateTime.now())
-                .build();
+    @GetMapping("/repos/{username}")
+    public Flux<GitRepositoryResponse> getAllGitRepository(@PathVariable String username)
+    {
+        return gitService.getRepositoriesByUser(username);
 
     }
 
+    @GetMapping("/repos/{username}/{projectName}")
+    public Flux<GitRepositoryResponse> getGitRepository(@PathVariable String username, @PathVariable String projectName)
+    {
+        return gitService.getRepositories(username, projectName);
+
+    }
 
 }

@@ -1,18 +1,23 @@
 package co.istad.project.features.git;
 
 import co.istad.project.features.git.dto.GitRepositoryResponse;
-import org.springframework.http.ResponseEntity;
+import reactor.core.publisher.Flux;
 
 public interface GitService {
 
+
     /**
-     * Get list of repositories from a user
-     *
+     * Get all repositories from a user
      * @param username
-     * @return List of repositories
-     * author: Lyhou
+     * @return Flux<GitRepositoryResponse>
+     *
+     * author: lyhou
      */
-    ResponseEntity<GitRepositoryResponse> getListRepositories(String username);
+    Flux<GitRepositoryResponse> getRepositoriesByUser(String username);
+
+    Flux<GitRepositoryResponse> getRepositories(String username, String projectName);
+
+
 
 
 }

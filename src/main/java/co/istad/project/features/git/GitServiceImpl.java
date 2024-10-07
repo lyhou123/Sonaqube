@@ -7,44 +7,35 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 
 @Service
 @RequiredArgsConstructor
 public class GitServiceImpl implements GitService {
 
-    private final RestTemplate restTemplate;
-
-    private final UserRepository userRepository;
-
-    private final GitMapper gitMapper;
+    private final WebClient webClient;
 
     @Override
-    public ResponseEntity<GitRepositoryResponse> getListRepositories(String username) {
+    public Flux<GitRepositoryResponse> getRepositoriesByUser(String username) {
 
-//        var user = userRepository.findUsername(username).orElseThrow(
-//
-//                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Username not found")
-//
-//        );
+        return webClient.get()
+                .uri("/users/{username}/repos", username)
+                .retrieve()
+                .bodyToFlux(GitRepositoryResponse.class);
 
-
-        String url = "https://api.github.com/users/" + username + "/repos";
-
-        var response = restTemplate.getForEntity(url, GitRepositoryResponse.class);
-
-        if (response.getStatusCode().is2xxSuccessful()) {
-
-              return response;
-
-        } else if(response.getStatusCode().is4xxClientError()) {
-
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Username not found");
-
-        } else {
-
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error on Github API");
-        }
 
     }
+
+    @Override
+    public Flux<GitRepositoryResponse> getRepositories(String username, String projectName) {
+
+        return webClient.get()
+                .uri("/repos/{username}/{projectName}", username, projectName)
+                .retrieve()
+                .bodyToFlux(GitRepositoryResponse.class);
+    }
+
+
 }
