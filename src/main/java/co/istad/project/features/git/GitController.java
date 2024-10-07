@@ -2,7 +2,6 @@ package co.istad.project.features.git;
 
 import co.istad.project.features.git.dto.GitRepositoryResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
@@ -15,9 +14,19 @@ public class GitController {
     private final GitService gitService;
 
     @GetMapping("/repos/{username}")
-    public Flux<GitRepositoryResponse> getAllGitRepository(@PathVariable String username)
+    public Flux<GitRepositoryResponse> getAllGitRepository(@PathVariable String username,
+                                                           @RequestParam(required = false) String projectName)
     {
-        return gitService.getRepositoriesByUser(username);
+//        check if projectName is null or empty then return all repositories
+        if(projectName == null || projectName.isEmpty())
+        {
+
+            return gitService.getRepositoriesByUser(username,"");
+
+        }
+
+//        else return repositories by project name
+        return gitService.getRepositoriesByUser(username,projectName);
 
     }
 
@@ -27,5 +36,7 @@ public class GitController {
         return gitService.getRepositories(username, projectName);
 
     }
+
+
 
 }

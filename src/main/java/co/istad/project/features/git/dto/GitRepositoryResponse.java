@@ -6,6 +6,7 @@ import lombok.Builder;
 public record GitRepositoryResponse(
 
             String id,
+            String full_name,
             String name,
             String description,
             String url,

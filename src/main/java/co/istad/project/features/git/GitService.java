@@ -8,12 +8,18 @@ public interface GitService {
 
     /**
      * Get all repositories from a user
-     * @param username
+     *
      * @return Flux<GitRepositoryResponse>
      *
      * author: lyhou
      */
-    Flux<GitRepositoryResponse> getRepositoriesByUser(String username);
+    Flux<GitRepositoryResponse> getRepositoriesByUser(String username,String projectName);
+
+    /**
+     * Get a repository from a user
+     *
+     * @return Flux<GitRepositoryResponse>
+     */
 
     Flux<GitRepositoryResponse> getRepositories(String username, String projectName);
 
