@@ -11,6 +11,7 @@ public record UserRegisterDto(
         @NotNull(message = "Username is required")
         String userName,
         @Email(message = "Email format is not correct!")
+        @NotNull(message = "Email is required")
         String email,
         @NotNull(message = "Password is required")
         String password,
