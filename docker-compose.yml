@@ -12,4 +12,4 @@ services:
     ports:
       - '3006:8080'
     volumes:
-       - '/home/lyhou/Sonaqube/images:/home/ite/media'
+       - '/home/lyhou/Sonaqube/images:/home/cyber/media'
