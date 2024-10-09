@@ -6,7 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    #restart: always
+    tty: true
     environment:
       - TZ=Asia/Bangkok
     ports:
