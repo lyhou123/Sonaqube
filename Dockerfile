@@ -14,4 +14,4 @@ EXPOSE 8080
 VOLUME /filestorage/images
 VOLUME /keys
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=pro", "app.jar"]

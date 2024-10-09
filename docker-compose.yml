@@ -11,5 +11,5 @@ services:
       - TZ=Asia/Bangkok
     ports:
       - '3006:8080'
-volumes:
-  db_data:
+    volumes:
+       - '/home/lyhou/Sonaqube/images:/home/ite/media'
