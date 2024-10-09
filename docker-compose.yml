@@ -2,7 +2,7 @@ version: '3.8'
 services:
   cyber_api:
     container_name: cyber_api
-    image: cyber_project:1.1
+    image: cyber_project
     build:
       context: .
       dockerfile: Dockerfile
