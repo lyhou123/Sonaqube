@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  alumni_api:
+  cyber_api:
     container_name: cyber_api
     image: cyber_project:1.1
     build:
@@ -10,6 +10,6 @@ services:
     environment:
       - TZ=Asia/Bangkok
     ports:
-      - '3106:8080'
+      - '3006:8080'
 volumes:
   db_data:
