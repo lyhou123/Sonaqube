@@ -63,7 +63,7 @@ public class SecurityConfiguration {
                                 .requestMatchers("/api/v1/files/**").permitAll()
                                 .requestMatchers("/images/**").permitAll()
 
-                                .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 ).csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)

@@ -11,4 +11,6 @@ public interface AuthService {
     AuthResponse login(AuthRequest authRequest);
     ResponseUserDto createUser(UserRegisterDto userRegisterDto);
     AuthResponse refreshToken(RefreshTokenRequest refreshToken);
+
+    String verifyAccount(String email, String otp);
 }

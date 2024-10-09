@@ -12,6 +12,8 @@ import co.istad.project.features.user.dto.ResponseUserDto;
 import co.istad.project.features.user.dto.UserRegisterDto;
 import co.istad.project.features.user.UserRepository;
 import co.istad.project.security.TokenGenerator;
+import co.istad.project.utils.EmailUtil;
+import co.istad.project.utils.OtpUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +24,8 @@ import org.springframework.security.oauth2.server.resource.authentication.Bearer
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +48,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final OtpUtil otpUtil;
+
+    private final EmailUtil emailUtil;
     public AuthResponse login(AuthRequest authRequest) {
         Authentication authentication = daoAuthenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password())
@@ -62,8 +70,18 @@ public class AuthServiceImpl implements AuthService {
        return tokenGenerator.generateTokens(authentication);
     }
 
+
+
     @Override
     public ResponseUserDto createUser(UserRegisterDto userRegisterDto){
+
+        String otp = otpUtil.generateOtp();
+
+        try {
+            emailUtil.sendOtpEmail(userRegisterDto.email(), otp);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to send otp please try again");
+        }
 
         if(userRepository.existsByEmail(userRegisterDto.email())){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"User with email " + userRegisterDto.email() + " already existed");
@@ -90,9 +108,22 @@ public class AuthServiceImpl implements AuthService {
         user.setRoles(roles);
         // set password for users
         user.setPassword(passwordEncoder.encode(userRegisterDto.password()));
+        user.setOtp(otp);
+        user.setOtpGeneratedTime(LocalDateTime.now());
 
         userRepository.save(user);
 
         return userMapper.mapFromUserToUserResponseDto(user);
+    }
+
+    @Override
+    public String verifyAccount(String email, String otp) {
+        User user = userRepository.findUserByUuid(email);
+        if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
+                LocalDateTime.now()).getSeconds() < (1 * 60)) {
+            userRepository.save(user);
+            return "OTP verified you can login";
+        }
+        return "Please regenerate otp and try again";
     }
 }

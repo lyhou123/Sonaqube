@@ -15,6 +15,22 @@ spring:
         properties:
             hibernate:
             dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+  # mail client configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "lyhou282@gmail.com"
+    password: "nizm fijt ltqk mtfi"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
 springdoc:
   swagger-ui:
     path: '/'
@@ -22,6 +38,7 @@ springdoc:
 sonar:
   token: squ_55caae1ee23e4d6c9ecdaece2796acf29d40c8e7    #squ_fb8b910e970a8269272808486bfb0f111636083e(server)
   url: http://167.172.64.59:3004
+
 
 my-app:
   state: dev

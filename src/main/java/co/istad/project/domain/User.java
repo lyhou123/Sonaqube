@@ -53,4 +53,8 @@ public class User {
     )
     Set<Role> roles = new HashSet<>();
 
+    private String otp;
+    private LocalDateTime otpGeneratedTime;
+
+
 }

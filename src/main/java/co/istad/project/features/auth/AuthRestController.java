@@ -11,6 +11,7 @@ import co.istad.project.respone.BaseRestResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -67,6 +68,17 @@ public class AuthRestController {
                 .message("Token refreshed successfully")
                 .build();
 
+    }
+
+    @PutMapping("/verify-account")
+    public BaseRestResponse<Object> verifyAccount(@RequestParam String email,
+        @RequestParam String otp) {
+        return BaseRestResponse
+                .builder()
+                .status(HttpStatus.OK.value())
+                .data(authService.verifyAccount(email, otp))
+                .message("Account verified successfully")
+                .build();
     }
 
 }
