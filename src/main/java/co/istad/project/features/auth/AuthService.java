@@ -13,4 +13,6 @@ public interface AuthService {
     AuthResponse refreshToken(RefreshTokenRequest refreshToken);
 
     String verifyAccount(String email, String otp);
+
+    String resendOtp(String email);
 }

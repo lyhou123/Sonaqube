@@ -86,8 +86,11 @@ public class FileServiceImpl implements FileService {
             return fileName;
 
         } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
+
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "Unable to upload file !!");
+
         }
 
     }
@@ -148,10 +151,11 @@ public class FileServiceImpl implements FileService {
             }
 
         } catch (MalformedURLException ex) {
-            ex.printStackTrace();
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "File not found !!");
         }
 
-        return null;
     }
 
 
@@ -164,7 +168,9 @@ public class FileServiceImpl implements FileService {
             Files.deleteIfExists(imagePath);
 
         } catch (IOException ex) {
-            ex.printStackTrace();
+           throw new ResponseStatusException(
+                   HttpStatus.NOT_FOUND,
+                   "File not found !!");
         }
 
     }

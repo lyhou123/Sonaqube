@@ -47,18 +47,8 @@ public class AuthRestController {
                 .build();
     }
 
-//    @PostMapping("/refresh")
-//    public BaseRestResponse<Object> refreshToken(@RequestBody RefreshTokenRequest refresTokenRequest)
-//    {
-//      return BaseRestResponse
-//              .builder()
-//              .status(HttpStatus.OK.value())
-//              .data(authService.refreshToken(refresTokenRequest))
-//              .message("Token refreshed successfully")
-//              .build();
-//    }
 
-    @PostMapping("/refreshToken1")
+    @PostMapping("/refreshToken")
     public BaseRestResponse<Object> refreshToken( @RequestBody RefreshTokenRequest request) {
 
         return BaseRestResponse
@@ -71,14 +61,27 @@ public class AuthRestController {
     }
 
     @PutMapping("/verify-account")
-    public BaseRestResponse<Object> verifyAccount(@RequestParam String email,
-        @RequestParam String otp) {
+    public BaseRestResponse<Object> verifyAccount(@RequestParam String email, @RequestParam String otp) {
+
         return BaseRestResponse
                 .builder()
                 .status(HttpStatus.OK.value())
                 .data(authService.verifyAccount(email, otp))
                 .message("Account verified successfully")
                 .build();
+    }
+
+
+    @PutMapping("/resend-otp")
+    public BaseRestResponse<Object> resendOtp(@RequestParam String email) {
+
+        return BaseRestResponse
+                .builder()
+                .status(HttpStatus.OK.value())
+                .data(authService.resendOtp(email))
+                .message("OTP sent successfully")
+                .build();
+
     }
 
 }

@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Component
 @RequiredArgsConstructor
@@ -13,19 +15,28 @@ public class EmailUtil {
 
   private final JavaMailSender javaMailSender;
 
+  private final TemplateEngine templateEngine;
+
   public void sendOtpEmail(String email, String otp) throws MessagingException {
+
     MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-    MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+
+    MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
+
+    // Create a Thymeleaf context
+    Context context = new Context();
+    context.setVariable("email", email);
+    context.setVariable("otp", otp);
+
+    // Render the Thymeleaf template as a String
+    String htmlContent = templateEngine.process("otp-email", context);
+
     mimeMessageHelper.setTo(email);
     mimeMessageHelper.setSubject("Verify OTP");
-    mimeMessageHelper.setText("""
-        <div>
-          <a href="http://localhost:8080/verify-account?email=%s&otp=%s" target="_blank">click link to verify</a>
-        </div>
-        """.formatted(email, otp), true);
+    mimeMessageHelper.setText(htmlContent, true);
 
     javaMailSender.send(mimeMessage);
-
   }
 
 }
+

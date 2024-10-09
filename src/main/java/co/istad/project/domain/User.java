@@ -33,6 +33,7 @@ public class User {
     private String bio;
     private Boolean isDeleted;
     private Boolean isVerified;
+    private Boolean isActive;
 
 
     private Boolean isAccountNonExpired;

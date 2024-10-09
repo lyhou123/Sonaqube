@@ -53,6 +53,15 @@ public class AuthServiceImpl implements AuthService {
 
     private final EmailUtil emailUtil;
     public AuthResponse login(AuthRequest authRequest) {
+
+        User user = userRepository.findUsersByEmail(authRequest.email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (!user.getIsActive()) {
+
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not verified");
+        }
+
         Authentication authentication = daoAuthenticationProvider.authenticate(
                 new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password())
         );
@@ -107,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
         roles.add(roleRepository.findRoleByRoleName(EnumRole.ROLE_USER).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role is not found.")));
         user.setRoles(roles);
         // set password for users
+        user.setIsActive(false);
         user.setPassword(passwordEncoder.encode(userRegisterDto.password()));
         user.setOtp(otp);
         user.setOtpGeneratedTime(LocalDateTime.now());
@@ -118,12 +128,45 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public String verifyAccount(String email, String otp) {
-        User user = userRepository.findUserByUuid(email);
+
+        User user = userRepository.findUsersByEmail(email)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with this email: " + email));
+
         if (user.getOtp().equals(otp) && Duration.between(user.getOtpGeneratedTime(),
-                LocalDateTime.now()).getSeconds() < (1 * 60)) {
+                LocalDateTime.now()).getSeconds() < (2 * 60)) {
+
+//            set user as verified
+            user.setIsActive(true);
+
             userRepository.save(user);
+
             return "OTP verified you can login";
         }
+
         return "Please regenerate otp and try again";
+    }
+
+    @Override
+    public String resendOtp(String email) {
+
+        User user = userRepository.findUsersByEmail(email)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found with this email: " + email));
+
+        String otp = otpUtil.generateOtp();
+
+        try {
+            emailUtil.sendOtpEmail(email, otp);
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unable to send otp please try again");
+        }
+
+        user.setOtp(otp);
+        user.setOtpGeneratedTime(LocalDateTime.now());
+
+        userRepository.save(user);
+
+        return "Email sent... please verify account within 2 minutes";
     }
 }
