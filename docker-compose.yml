@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  alumni_api:
+    container_name: cyber_api
+    image: cyber_project:1.1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - TZ=Asia/Bangkok
+    ports:
+      - '3106:8080'
+volumes:
+  db_data:
