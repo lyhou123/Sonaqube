@@ -12,6 +12,6 @@ COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
 VOLUME /home/cyber/media
-VOLUME /keys
+VOLUME /access-refresh-token-keys
 
 ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=pro", "app.jar"]
