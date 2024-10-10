@@ -16,12 +16,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 //config swagger
 @OpenAPIDefinition(
         info = @Info(
-                title = "Mobile Banking API (Data Analytics Class )",
+                title = "CyberSecurity API",
                 version = "1.0",
-                description = "Mobile Banking API for Data Analytics Class 2024",
+                description = "CSTAD CyberSecurity API Documentation 2 Generation",
                 contact = @Contact(
-                        name = "Admin",
-                        email = "admin@gmail.com"
+                        name = "Student",
+                        email = "lyhou282@gmail.com"
                 )
         ),
         security = @SecurityRequirement(name = "bearerAuth")
