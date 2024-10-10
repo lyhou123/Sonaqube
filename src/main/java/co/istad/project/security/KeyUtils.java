@@ -83,7 +83,7 @@ public class KeyUtils {
         }
 
 
-        File directory = new File("keys");
+        File directory = new File("access-refresh-token-keys");
         if(!directory.exists()){
             directory.mkdirs();
         }
