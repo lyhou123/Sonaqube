@@ -14,4 +14,4 @@ EXPOSE 8080
 VOLUME /home/cyber/media
 VOLUME /access-refresh-token-keys
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=dev", "app.jar"]
