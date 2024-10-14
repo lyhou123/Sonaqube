@@ -11,6 +11,7 @@ public record ResponseUserDto(
         String name,
         String email,
         String profile,
+        String bio,
         LocalDateTime registeredDate,
         LocalDateTime updatedDate,
         Boolean isVerified,

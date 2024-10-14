@@ -37,9 +37,11 @@ public class UserServiceImpl implements UserService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found with uuid: "+uuid);
         }
 
-        var newUsers = userMapper.mapFromUpdateUserDtoToUser(updateUserDto);
+        userMapper.updateUserFromRequest(findUser,updateUserDto);
 
-        return userMapper.mapFromUserToUserResponseDto(userRepository.save(newUsers));
+        return userMapper.mapFromUserToUserResponseDto(userRepository.save(findUser));
+
+
     }
 
     @Override
