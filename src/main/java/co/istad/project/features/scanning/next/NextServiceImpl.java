@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -77,6 +78,11 @@ public class NextServiceImpl implements NextService{
     public String newNextScanner(String gitUrl, String branch, String projectName) throws Exception {
 
 
+        if (gitUrl == null || gitUrl.isEmpty() || projectName == null || projectName.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Git URL and project name are required");
+        }
+
+
         String currentProjectDir = appConfig.getProjectAbsolutePath();
 
         String cloneDirect = currentProjectDir + clone_dir;
@@ -87,6 +93,14 @@ public class NextServiceImpl implements NextService{
         String fileName = gitConfig.gitClone(gitUrl, branch, cloneDirect);
 
         System.out.println("this is file name"+fileName);
+
+
+        if(fileName == null || fileName.isEmpty() || fileName.isBlank() || cloneDirect == null || cloneDirect.isEmpty() || cloneDirect.isBlank())
+        {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Git URL and project name are required");
+        }
+
+
 
         // Prepare and start the SonarScanner process
         ProcessBuilder processBuilder = new ProcessBuilder()
