@@ -81,7 +81,12 @@ public class NextServiceImpl implements NextService{
 
         String cloneDirect = currentProjectDir + clone_dir;
 
+        System.out.println("this is clone direct"+cloneDirect);
+
+
         String fileName = gitConfig.gitClone(gitUrl, branch, cloneDirect);
+
+        System.out.println("this is file name"+fileName);
 
         // Prepare and start the SonarScanner process
         ProcessBuilder processBuilder = new ProcessBuilder()
