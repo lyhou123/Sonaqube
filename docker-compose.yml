@@ -13,4 +13,4 @@ services:
       - '3006:8080'
     volumes:
        - '/home/lyhou/Sonaqube/images:/home/cyber/media'
-       - 'home/lyhou/Sonaqube/git_clone_repo:/home/cyber/git_clone_repo'
+       - '/home/lyhou/Sonaqube/git_clone_repo:/home/cyber/git_clone_repo'
