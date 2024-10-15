@@ -83,19 +83,17 @@ public class NextServiceImpl implements NextService{
 
         String fileName = gitConfig.gitClone(gitUrl, branch, cloneDirect);
 
-        ProcessBuilder processBuilder = new ProcessBuilder(
-                "sonar-scanner",
-                "-Dsonar.projectKey=" + projectName,
-                "-Dsonar.projectName=" + projectName,
-                "-Dsonar.host.url=" + sonarHostUrl,
-                "-Dsonar.login=" + sonarLoginToken,
-                "-Dsonar.sources=."
+        // Prepare and start the SonarScanner process
+        ProcessBuilder processBuilder = new ProcessBuilder()
+                .command("sonar-scanner",
+                        "-Dsonar.projectKey=" + projectName,
+                        "-Dsonar.projectName=" + projectName,
+                        "-Dsonar.host.url=" + sonarHostUrl,
+                        "-Dsonar.login=" + sonarLoginToken,
+                        "-Dsonar.sources=" + cloneDirect) // Specify source directory
+                .redirectErrorStream(true);
 
-                );
-
-       processBuilder.redirectErrorStream(true);
-
-         Process process = processBuilder.start();
+        Process process = processBuilder.start();
 
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                 String line;
