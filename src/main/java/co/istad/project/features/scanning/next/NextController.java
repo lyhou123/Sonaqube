@@ -24,5 +24,17 @@ public class NextController {
                 .build();
     }
 
+@GetMapping("new")
+    public BaseRestResponse<Object> newScanning(String gitUrl, String branch, String projectName) throws Exception {
+
+        return BaseRestResponse.builder()
+                .data(nextService.nextScanning(gitUrl, branch, projectName))
+                .message("New project has been scanned successfully.")
+                .status(200)
+                .build();
+    }
+
+
+
 
 }

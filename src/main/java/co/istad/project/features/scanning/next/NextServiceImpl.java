@@ -4,7 +4,10 @@ import co.istad.project.config.AppConfig;
 import co.istad.project.config.GitConfig;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -29,6 +32,10 @@ public class NextServiceImpl implements NextService{
     private final GitConfig gitConfig;
     @Override
     public String nextScanning(String gitUrl, String branch, String projectName)  {
+
+        if (gitUrl == null || gitUrl.isEmpty() || projectName == null || projectName.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Git URL and project name are required");
+        }
 
         String currentProjectDir = appConfig.getProjectAbsolutePath();
         String cloneDirect = currentProjectDir + clone_dir;
@@ -66,7 +73,60 @@ public class NextServiceImpl implements NextService{
 
     }
 
-        public void scanProject(List<String> command) throws Exception {
+    @Override
+    public String newNextScanner(String gitUrl, String branch, String projectName) throws Exception {
+
+
+        String currentProjectDir = appConfig.getProjectAbsolutePath();
+
+        String cloneDirect = currentProjectDir + clone_dir;
+
+        String fileName = gitConfig.gitClone(gitUrl, branch, cloneDirect);
+
+        ProcessBuilder processBuilder = new ProcessBuilder(
+                "sonar-scanner",
+                "-Dsonar.projectKey=" + projectName,
+                "-Dsonar.projectName=" + projectName,
+                "-Dsonar.host.url=" + sonarHostUrl,
+                "-Dsonar.login=" + sonarLoginToken,
+                "-Dsonar.sources=."
+
+                );
+
+       processBuilder.redirectErrorStream(true);
+
+         Process process = processBuilder.start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println("OUTPUT: " + line);
+                }
+
+                String lineError;
+                try (BufferedReader errorReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+                    while ((lineError = errorReader.readLine()) != null) {
+                        System.out.println("ERROR: " + lineError);
+                    }
+                }
+
+                int exitCode = process.waitFor();
+                System.out.println("SonarQube scan completed with exit code " + exitCode);
+
+                if (exitCode != 0) {
+                    throw new RuntimeException("SonarQube scan failed with exit code " + exitCode);
+                }
+
+
+            }catch (Exception e) {
+                System.err.println("Error during SonarQube scan: " + e.getMessage());
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Error during SonarQube scan:"); // Rethrow as a runtime exception
+            }
+
+        return fileName;
+    }
+
+    public void scanProject(List<String> command) throws Exception {
 
         // Execute the command
         ProcessBuilder processBuilder = new ProcessBuilder(command);
@@ -96,4 +156,6 @@ public class NextServiceImpl implements NextService{
             }
         }
     }
+
+
 }
