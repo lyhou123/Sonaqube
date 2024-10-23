@@ -24,7 +24,7 @@ public class NextController {
                 .build();
     }
 
-@GetMapping("new")
+@GetMapping("/new")
     public BaseRestResponse<Object> newScanning(String gitUrl, String branch, String projectName) throws Exception {
 
         return BaseRestResponse.builder()
