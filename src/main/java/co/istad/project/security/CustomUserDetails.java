@@ -5,8 +5,11 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.List;
+
 
 
 @Getter
@@ -22,9 +25,16 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleName().name()))
-                .collect(Collectors.toList());
+
+        List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
+
+        user.getAuthorities().forEach(
+
+                authority -> grantedAuthorityList.add(new SimpleGrantedAuthority(authority.getAuthorityName())
+
+                ));
+
+        return grantedAuthorityList;
     }
 
     @Override

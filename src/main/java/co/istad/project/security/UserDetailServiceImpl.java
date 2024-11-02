@@ -15,10 +15,13 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
         var user = userRepository.findUsersByEmail(email).orElseThrow();
+
         CustomUserDetails customUserDetails = new CustomUserDetails();
+
         customUserDetails.setUser(user);
-        System.out.println("CustomUserDetails: " + user.getUuid());
+
         return customUserDetails;
     }
 }

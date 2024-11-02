@@ -29,7 +29,6 @@ public class JwtToUserConverter implements Converter<Jwt, UsernamePasswordAuthen
 
         userDetail.setUser(user);
 
-        System.out.println("User Authorities are" + userDetail.getAuthorities());
         userDetail.getAuthorities().forEach(
                 authority -> {
                     System.out.println("Here is the authority get from the jwt"+authority.getAuthority());
